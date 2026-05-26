@@ -1,1 +1,26 @@
 @import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Noto Sans', sans-serif;
+
+  /* Fondos */
+  --color-bg:           oklch(9%  0.025 255);
+  --color-surface:      oklch(13% 0.025 255);
+  --color-surface-high: oklch(18% 0.022 255);
+
+  /* Bordes */
+  --color-border: oklch(25% 0.025 255);
+
+  /* Texto */
+  --color-text:  oklch(93% 0.01 255);
+  --color-muted: oklch(52% 0.02 255);
+
+  /* Marca — verde lima FIFA 2026 */
+  --color-primary:    oklch(78% 0.2 155);
+  --color-primary-fg: oklch(10% 0.01 155);
+  --color-primary-hover: oklch(72% 0.2 155);
+
+  /* Error */
+  --color-error:    oklch(65% 0.22 25);
+  --color-error-bg: oklch(12% 0.04 25);
+}
