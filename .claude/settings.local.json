@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__plugin_engram_engram__mem_context",
+      "mcp__plugin_engram_engram__mem_save",
+      "Bash(Get-ChildItem -Path \"E:\\\\Proyectos-code\\\\prode-2026\\\\src\" -Recurse)",
+      "Bash(Select-Object FullName)",
+      "Bash(git add *)"
+    ]
+  }
+}
