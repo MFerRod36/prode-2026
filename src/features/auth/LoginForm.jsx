@@ -23,6 +23,7 @@ export function LoginForm() {
       <Input
         label="Email"
         type="email"
+        autoComplete="email"
         placeholder="tu@email.com"
         error={errors.email?.message}
         {...register('email')}
@@ -30,6 +31,7 @@ export function LoginForm() {
       <Input
         label="Contraseña"
         type="password"
+        autoComplete="current-password"
         placeholder="••••••••"
         error={errors.password?.message}
         {...register('password')}
