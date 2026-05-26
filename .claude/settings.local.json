@@ -5,7 +5,18 @@
       "mcp__plugin_engram_engram__mem_save",
       "Bash(Get-ChildItem -Path \"E:\\\\Proyectos-code\\\\prode-2026\\\\src\" -Recurse)",
       "Bash(Select-Object FullName)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "mcp__plugin_figma_figma__get_design_context",
+      "mcp__plugin_figma_figma__get_screenshot",
+      "Bash(curl -s -o /tmp/brand.png \"https://www.figma.com/api/mcp/asset/665e1bae-268a-4c20-a11a-88a9adfffd0b\")",
+      "Bash(curl -s -o /tmp/components.png \"https://www.figma.com/api/mcp/asset/2a009cc7-7a90-4216-8677-a3a9629a5ad6\")",
+      "Bash(curl -s -o \"E:/Proyectos-code/prode-2026/brand.png\" \"https://www.figma.com/api/mcp/asset/665e1bae-268a-4c20-a11a-88a9adfffd0b\")",
+      "Bash(curl -s -o \"E:/Proyectos-code/prode-2026/components.png\" \"https://www.figma.com/api/mcp/asset/2a009cc7-7a90-4216-8677-a3a9629a5ad6\")",
+      "Bash(npm install *)",
+      "Bash(python3 -c ' *)"
     ]
   }
 }

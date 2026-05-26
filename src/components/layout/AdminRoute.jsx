@@ -1,4 +1,5 @@
-import { Navigate, Outlet } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
+import { AppLayout } from './AppLayout'
 import { useAuth } from '@/hooks/useAuth'
 
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL
@@ -8,5 +9,5 @@ export default function AdminRoute() {
 
   if (loading) return null
 
-  return user?.email === ADMIN_EMAIL ? <Outlet /> : <Navigate to="/home" replace />
+  return user?.email === ADMIN_EMAIL ? <AppLayout /> : <Navigate to="/home" replace />
 }
