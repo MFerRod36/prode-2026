@@ -6,7 +6,7 @@ export default function Login() {
       <div className="w-full max-w-sm">
 
         <div className="mb-8 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-text">
+          <h1 className="font-display text-4xl font-bold tracking-tight text-text">
             PRODE <span className="text-primary">2026</span>
           </h1>
           <p className="mt-2 text-sm text-muted">Mundial FIFA · Grupo cerrado</p>

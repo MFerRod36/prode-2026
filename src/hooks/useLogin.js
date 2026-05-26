@@ -1,18 +1,12 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { supabase } from '@/lib/supabase'
 
 export function useLogin() {
   const navigate = useNavigate()
   const [authError, setAuthError] = useState(null)
 
-  async function login({ email, password }) {
-    setAuthError(null)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setAuthError('Usuario o contraseña incorrectos')
-      return
-    }
+  // TODO: conectar Supabase cuando trabajemos el backend
+  async function login() {
     navigate('/home')
   }
 

@@ -1,7 +1,16 @@
 @import 'tailwindcss';
 
+@font-face {
+  font-family: 'FWC2026';
+  src: url('/fonts/fwc2026.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --font-sans: 'Noto Sans', sans-serif;
+  --font-sans:    'Noto Sans', sans-serif;
+  --font-display: 'FWC2026', 'Noto Sans', sans-serif;
 
   /* Fondos */
   --color-bg:           oklch(9%  0.025 255);
@@ -15,12 +24,23 @@
   --color-text:  oklch(93% 0.01 255);
   --color-muted: oklch(52% 0.02 255);
 
-  /* Marca — verde lima FIFA 2026 */
-  --color-primary:    oklch(78% 0.2 155);
-  --color-primary-fg: oklch(10% 0.01 155);
-  --color-primary-hover: oklch(72% 0.2 155);
+  /* Marca — teal #55BDB6 */
+  --color-primary:       #55BDB6;
+  --color-primary-fg:    #03100f;
+  --color-primary-hover: #44a9a2;
 
   /* Error */
   --color-error:    oklch(65% 0.22 25);
   --color-error-bg: oklch(12% 0.04 25);
+}
+
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
 }
