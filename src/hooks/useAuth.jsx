@@ -5,7 +5,7 @@ const AuthContext = createContext(null)
 // TODO: conectar Supabase cuando trabajemos el backend
 export function AuthProvider({ children }) {
   return (
-    <AuthContext value={{ user: { id: 'mock' }, loading: false }}>
+    <AuthContext value={{ user: { id: 'mock', user_metadata: { name: 'María' } }, loading: false }}>
       {children}
     </AuthContext>
   )
