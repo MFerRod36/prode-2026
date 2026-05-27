@@ -3,45 +3,24 @@ import { PointsCard } from '@/features/home/PointsCard'
 import { MatchCard } from '@/features/home/MatchCard'
 import { RecentResults } from '@/features/home/RecentResults'
 import { Carousel } from '@/components/ui/Carousel'
+import { MOCK_PARTIDOS } from '@/features/predictions/mockData'
+import { MOCK_RANKING } from '@/features/ranking/mockData'
+import { applyPredictions } from '@/lib/predictions'
 
-// TODO: reemplazar con datos reales de Supabase
-const MOCK_PUNTOS = 5
-const MOCK_POSICION = 2
+const TODAY = new Date().toISOString().slice(0, 10)
 
-const MOCK_HOY = [
-  {
-    id: 1,
-    local: 'Argentina',   flag_local: '🇦🇷',
-    visitante: 'España',  flag_visitante: '🇪🇸',
-    hora: '15:00', estadio: 'MetLife Stadium',
-    estado: 'proximo', mi_prediccion: '2-1',
-  },
-  {
-    id: 2,
-    local: 'Brasil',      flag_local: '🇧🇷',
-    visitante: 'Francia', flag_visitante: '🇫🇷',
-    hora: '18:00', estadio: 'SoFi Stadium',
-    estado: 'en_curso', minuto: 67, goles_local: 1, goles_visitante: 0,
-    mi_prediccion: '1-0',
-  },
-  {
-    id: 3,
-    local: 'USA',         flag_local: '🇺🇸',
-    visitante: 'México',  flag_visitante: '🇲🇽',
-    hora: '21:00', estadio: 'AT&T Stadium',
-    estado: 'proximo', mi_prediccion: '0-1',
-  },
-]
-
-const MOCK_RECIENTES = [
-  { id: 4, local: 'Alemania',   flag_local: '🇩🇪', visitante: 'Italia',        flag_visitante: '🇮🇹', goles_local: 2, goles_visitante: 1, mi_prediccion: '2-1', puntos: 3 },
-  { id: 5, local: 'Portugal',   flag_local: '🇵🇹', visitante: 'Uruguay',       flag_visitante: '🇺🇾', goles_local: 0, goles_visitante: 0, mi_prediccion: '1-0', puntos: 0 },
-  { id: 6, local: 'Inglaterra', flag_local: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', visitante: 'Países Bajos', flag_visitante: '🇳🇱', goles_local: 3, goles_visitante: 2, mi_prediccion: '2-1', puntos: 1 },
-]
+function getHomeData() {
+  const partidos = applyPredictions(MOCK_PARTIDOS)
+  const hoy      = partidos.filter(p => p.fecha === TODAY && (p.estado === 'proximo' || p.estado === 'en_curso'))
+  const recientes = partidos.filter(p => p.estado === 'finalizado' && p.puntos != null).slice(-3).reverse()
+  const me        = MOCK_RANKING.find(r => r.es_yo) ?? { puntos: 0, posicion: 0 }
+  return { hoy, recientes, me }
+}
 
 export default function Home() {
   const { user } = useAuth()
   const nombre = user?.user_metadata?.name ?? 'jugadora'
+  const { hoy, recientes, me } = getHomeData()
 
   return (
     <div className="flex flex-col gap-6">
@@ -51,20 +30,25 @@ export default function Home() {
         <p className="font-display text-4xl font-bold uppercase text-name">{nombre}</p>
       </div>
 
-      <PointsCard puntos={MOCK_PUNTOS} posicion={MOCK_POSICION} />
+      <PointsCard puntos={me.puntos} posicion={me.posicion} />
 
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-base font-bold uppercase tracking-wider text-text">Partidos de hoy</h2>
-        <Carousel
-          items={MOCK_HOY}
-          renderItem={match => <MatchCard match={match} />}
-        />
+        {hoy.length > 0 ? (
+          <Carousel items={hoy} renderItem={match => <MatchCard match={match} />} />
+        ) : (
+          <div className="rounded-xl border border-border bg-surface px-4 py-8 text-center">
+            <p className="font-sans text-sm text-muted">No hay partidos hoy</p>
+          </div>
+        )}
       </section>
 
-      <section className="flex flex-col gap-3">
-        <h2 className="font-display text-base font-bold uppercase tracking-wider text-text">Últimos resultados</h2>
-        <RecentResults results={MOCK_RECIENTES} />
-      </section>
+      {recientes.length > 0 && (
+        <section className="flex flex-col gap-3">
+          <h2 className="font-display text-base font-bold uppercase tracking-wider text-text">Últimos resultados</h2>
+          <RecentResults results={recientes} />
+        </section>
+      )}
 
     </div>
   )

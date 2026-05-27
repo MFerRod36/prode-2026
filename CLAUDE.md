@@ -103,13 +103,12 @@ Estas reglas deben respetarse siempre — son el corazón del producto:
 
 ## Modelo de datos (referencia rápida)
 
-| Tabla        | Descripción                                           |
-| ------------ | ----------------------------------------------------- |
-| usuarios     | id, username, password_hash, created_at               |
+| Tabla        | Descripción                                               |
+| ------------ | --------------------------------------------------------- |
+| usuarios     | id, username, password_hash, created_at                   |
 | partidos     | equipos, fase, estado, goles, goleador, cierre_prediccion |
-| formaciones  | jugadores por partido (titular/suplente/dt, pos_x, pos_y) |
-| predicciones | usuario_id + partido_id + goles + goleador             |
-| puntos       | puntos_resultado + puntos_goleador + puntos_total     |
+| predicciones | usuario_id + partido_id + goles + goleador                |
+| puntos       | puntos_resultado + puntos_goleador + puntos_total         |
 
 ---
 
@@ -120,7 +119,7 @@ Estas reglas deben respetarse siempre — son el corazón del producto:
 | /login             | público    | Formulario de acceso                 |
 | /home              | autenticado | Puntos, partidos del día, recientes |
 | /fixture           | autenticado | Lista completa con filtro por fase  |
-| /fixture/:id       | autenticado | Detalle del partido (3 estados)     |
+| /fixture/:id       | autenticado | Detalle del partido — info, estado, predicciones de otras usuarias (visible solo cuando finalizado) |
 | /ranking           | autenticado | Tabla general                       |
 | /ranking/:usuario  | autenticado | Detalle por usuaria                 |
 | /mis-predicciones  | autenticado | Fixture propio con estado           |
