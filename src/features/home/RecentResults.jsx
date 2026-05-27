@@ -1,4 +1,6 @@
+import { Link } from 'react-router-dom'
 import { cn } from '@/lib/cn'
+import { Flag } from '@/components/ui/Flag'
 
 function pointsClass(puntos) {
   if (puntos >= 3) return 'text-success'
@@ -9,7 +11,7 @@ function pointsClass(puntos) {
 function TeamRow({ flag, name, goals }) {
   return (
     <div className="flex h-8 items-center gap-2">
-      <span className="w-5 shrink-0 text-center text-sm leading-none">{flag}</span>
+      <Flag code={flag} className="h-4 w-auto shrink-0 rounded-sm" />
       <span className="flex-1 truncate font-display-norm text-sm uppercase tracking-widest text-text">{name}</span>
       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-tl rounded-br bg-white font-display text-base font-bold text-black">
         {goals}
@@ -22,8 +24,9 @@ export function RecentResults({ results }) {
   return (
     <div className="flex flex-col gap-2">
       {results.map((r) => (
-        <div
+        <Link
           key={r.id}
+          to={`/fixture/${r.id}`}
           className="flex flex-col rounded-xl border border-border bg-surface px-4 py-3"
         >
           <TeamRow flag={r.flag_local}     name={r.local}     goals={r.goles_local} />
@@ -37,7 +40,7 @@ export function RecentResults({ results }) {
               {r.puntos !== 0 ? `+${r.puntos}` : '0'}
             </span>
           </div>
-        </div>
+        </Link>
       ))}
     </div>
   )

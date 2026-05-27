@@ -1,20 +1,18 @@
+import { Link } from 'react-router-dom'
 import { cn } from '@/lib/cn'
-
-const POSITION_COLOR = {
-  1: 'text-gold',
-  2: 'text-muted',
-  3: 'text-name',
-}
 
 function RankingRow({ entry }) {
   const { posicion, usuario, puntos, es_yo } = entry
-  const posColor = POSITION_COLOR[posicion] ?? 'text-muted'
+  const posColor = posicion === 1 ? 'text-gold' : 'text-muted'
 
   return (
-    <div className={cn(
-      'flex items-center gap-3 py-3',
-      es_yo && '-mx-4 bg-primary/10 px-4'
-    )}>
+    <Link
+      to={`/ranking/${usuario}`}
+      className={cn(
+        'flex items-center gap-3 py-3',
+        es_yo && '-mx-4 bg-primary/10 px-4'
+      )}
+    >
       <span className={cn('w-5 shrink-0 text-center font-display text-lg font-bold', posColor)}>
         {posicion}
       </span>
@@ -33,7 +31,7 @@ function RankingRow({ entry }) {
 
       <span className="font-display text-xl font-bold text-primary">{puntos}</span>
       <span className="w-5 shrink-0 font-sans text-[10px] uppercase text-muted">pts</span>
-    </div>
+    </Link>
   )
 }
 

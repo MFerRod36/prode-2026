@@ -1,0 +1,36 @@
+name: Sync Partidos
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'   # cada 5 minutos
+  workflow_dispatch:          # trigger manual desde GitHub UI
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 200      # cubre 90min + tiempo extra + penales + margen
+
+    # Un solo job activo a la vez.
+    # Si llega un trigger mientras hay un partido en curso (loop live),
+    # el nuevo job queda pendiente — no mata el loop activo.
+    # Cuando el loop termina, el último trigger pendiente corre y sale rápido.
+    concurrency:
+      group: sync-partidos
+      cancel-in-progress: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Sync partidos
+        run: node scripts/sync-partidos.mjs
+        env:
+          VITE_SUPABASE_URL:    ${{ secrets.VITE_SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+          FOOTBALL_API_TOKEN:   ${{ secrets.FOOTBALL_API_TOKEN }}

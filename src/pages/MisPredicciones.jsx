@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import { ProximaDateCard, HistorialCard } from '@/features/predictions/PredictionCard'
-import { MOCK_PARTIDOS } from '@/features/predictions/mockData'
-import { applyPredictions, savePrediction } from '@/lib/predictions'
-import { isEditableDate, groupByDate } from '@/utils/date'
+import { usePredicciones } from '@/hooks/usePredicciones'
+import { groupByDate } from '@/utils/date'
 import { cn } from '@/lib/cn'
 
 function ProximasCarousel({ partidos, onSave }) {
@@ -49,42 +48,33 @@ function ProximasCarousel({ partidos, onSave }) {
 }
 
 export default function MisPredicciones() {
-  const [partidos, setPartidos] = useState(() => applyPredictions(MOCK_PARTIDOS))
+  const { partidos, loading, guardar } = usePredicciones()
 
-  function guardarPrediccion(id, prediccion) {
-    savePrediction(id, prediccion)
-    setPartidos(prev =>
-      prev.map(p => p.id === id ? { ...p, mi_prediccion: prediccion } : p)
-    )
-  }
-
-  const proximos  = partidos.filter(p =>
-    p.estado === 'en_curso' || (p.estado === 'proximo' && isEditableDate(p.fecha))
-  )
+  const proximos  = partidos.filter(p => p.estado === 'proximo' || p.estado === 'en_curso')
   const historial = partidos.filter(p => p.estado === 'finalizado')
 
   return (
     <div className="flex flex-col">
-      <h1 className="mb-4 font-display text-4xl font-bold uppercase text-name">
-        Mi Prode
-      </h1>
-      <div className="flex flex-col gap-8">
-        <section className="flex flex-col gap-3">
-          <h2 className="font-display text-base font-bold uppercase tracking-wider text-text">
-            Próximas
-          </h2>
-          <ProximasCarousel partidos={proximos} onSave={guardarPrediccion} />
-        </section>
-
-        {historial.length > 0 && (
+      <h1 className="mb-4 font-display text-4xl font-bold uppercase text-name">Mi Prode</h1>
+      {loading ? (
+        <div className="rounded-xl border border-border bg-surface px-4 py-8 text-center">
+          <p className="font-sans text-sm text-muted">Cargando...</p>
+        </div>
+      ) : (
+        <div className="flex flex-col gap-8">
           <section className="flex flex-col gap-3">
-            <h2 className="font-display text-base font-bold uppercase tracking-wider text-text">
-              Historial
-            </h2>
-            <HistorialCard partidos={historial} />
+            <h2 className="font-display text-base font-bold uppercase tracking-wider text-text">Próximas</h2>
+            <ProximasCarousel partidos={proximos} onSave={guardar} />
           </section>
-        )}
-      </div>
+
+          {historial.length > 0 && (
+            <section className="flex flex-col gap-3">
+              <h2 className="font-display text-base font-bold uppercase tracking-wider text-text">Historial</h2>
+              <HistorialCard partidos={historial} />
+            </section>
+          )}
+        </div>
+      )}
     </div>
   )
 }

@@ -1,26 +1,21 @@
 import { useAuth } from '@/hooks/useAuth'
+import { useRanking } from '@/hooks/useRanking'
+import { usePredicciones } from '@/hooks/usePredicciones'
 import { PointsCard } from '@/features/home/PointsCard'
 import { MatchCard } from '@/features/home/MatchCard'
 import { RecentResults } from '@/features/home/RecentResults'
 import { Carousel } from '@/components/ui/Carousel'
-import { MOCK_PARTIDOS } from '@/features/predictions/mockData'
-import { MOCK_RANKING } from '@/features/ranking/mockData'
-import { applyPredictions } from '@/lib/predictions'
 
-const TODAY = new Date().toISOString().slice(0, 10)
-
-function getHomeData() {
-  const partidos = applyPredictions(MOCK_PARTIDOS)
-  const hoy      = partidos.filter(p => p.fecha === TODAY && (p.estado === 'proximo' || p.estado === 'en_curso'))
-  const recientes = partidos.filter(p => p.estado === 'finalizado' && p.puntos != null).slice(-3).reverse()
-  const me        = MOCK_RANKING.find(r => r.es_yo) ?? { puntos: 0, posicion: 0 }
-  return { hoy, recientes, me }
-}
+const TODAY = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Argentina/Buenos_Aires' })
 
 export default function Home() {
-  const { user } = useAuth()
-  const nombre = user?.user_metadata?.name ?? 'jugadora'
-  const { hoy, recientes, me } = getHomeData()
+  const { perfil }        = useAuth()
+  const { ranking }       = useRanking()
+  const { partidos }      = usePredicciones()
+  const nombre            = perfil?.username ?? 'jugadora'
+  const me                = ranking.find(r => r.es_yo) ?? { puntos: 0, posicion: 0 }
+  const hoy               = partidos.filter(p => p.fecha === TODAY && (p.estado === 'proximo' || p.estado === 'en_curso'))
+  const recientes         = partidos.filter(p => p.estado === 'finalizado').slice(-3).reverse()
 
   return (
     <div className="flex flex-col gap-6">

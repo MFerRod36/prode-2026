@@ -1,5 +1,7 @@
+import { Link } from 'react-router-dom'
 import { cn } from '@/lib/cn'
 import { MapPin } from 'lucide-react'
+import { Flag } from '@/components/ui/Flag'
 
 const STATUS = {
   proximo:    { text: 'Próximo',    className: 'bg-primary/20 text-primary' },
@@ -27,7 +29,7 @@ function ScoreBox({ value, variant }) {
 function FlagWithBadge({ flag, goals }) {
   return (
     <div className="relative inline-block">
-      <span className="text-4xl">{flag}</span>
+      <Flag code={flag} className="h-10 w-auto rounded-sm" />
       {goals != null && (
         <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-name px-1 text-xs font-bold text-bg">
           {goals}
@@ -50,7 +52,7 @@ export function MatchCard({ match }) {
   const scoreVariant  = estado === 'en_curso' ? 'live' : estado === 'finalizado' ? 'final' : 'empty'
 
   return (
-    <div className="rounded-xl border border-border bg-surface px-6 py-5">
+    <Link to={`/fixture/${match.id}`} className="block rounded-xl border border-border bg-surface px-6 py-5">
 
       <div className="flex items-center justify-between gap-2">
         <div className="flex flex-1 flex-col items-center gap-2">
@@ -96,6 +98,6 @@ export function MatchCard({ match }) {
         </div>
       </div>
 
-    </div>
+    </Link>
   )
 }

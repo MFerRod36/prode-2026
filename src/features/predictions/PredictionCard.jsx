@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/cn'
-import { formatFecha, groupByDate, isEditableDate } from '@/utils/date'
+import { formatFecha, groupByDate } from '@/utils/date'
+import { Flag } from '@/components/ui/Flag'
 
 function pointsClass(pts) {
   if (pts >= 3) return 'text-success'
@@ -65,7 +66,7 @@ function ProximaRow({ partido, canEdit, onSave }) {
       <div className="flex items-center gap-2">
 
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
-          <span className="shrink-0 text-[11px] leading-none">{partido.flag_local}</span>
+          <Flag code={partido.flag_local} className="h-3.5 w-auto shrink-0 rounded-sm" />
           <span className="truncate font-display-norm text-[11px] uppercase tracking-wider text-text">
             {partido.local}
           </span>
@@ -95,7 +96,7 @@ function ProximaRow({ partido, canEdit, onSave }) {
           <span className="truncate text-right font-display-norm text-[11px] uppercase tracking-wider text-text">
             {partido.visitante}
           </span>
-          <span className="shrink-0 text-[11px] leading-none">{partido.flag_visitante}</span>
+          <Flag code={partido.flag_visitante} className="h-3.5 w-auto shrink-0 rounded-sm" />
         </div>
 
       </div>
@@ -165,8 +166,6 @@ function HistorialMatchItem({ partido }) {
 
 // Card de una fecha — va dentro del carrusel de próximas
 export function ProximaDateCard({ fecha, partidos, onSave, onPrev, onNext }) {
-  const editable = isEditableDate(fecha)
-
   return (
     <div className="rounded-xl border border-border bg-surface px-4 pb-3 pt-4">
       <div className="-mx-4 -mt-4 mb-3 flex items-center justify-between rounded-t-xl bg-surface-high px-4 py-2.5">
@@ -185,7 +184,7 @@ export function ProximaDateCard({ fecha, partidos, onSave, onPrev, onNext }) {
             {pi > 0 && <div className="my-1.5 h-px bg-border/25" />}
             <ProximaRow
               partido={p}
-              canEdit={editable && p.estado === 'proximo'}
+              canEdit={p.estado === 'proximo' && new Date() < new Date(p.cierre_prediccion)}
               onSave={pred => onSave(p.id, pred)}
             />
           </div>

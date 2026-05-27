@@ -1,6 +1,5 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import PrivateRoute from '@/components/layout/PrivateRoute'
-import AdminRoute from '@/components/layout/AdminRoute'
 import Login from '@/pages/Login'
 import Home from '@/pages/Home'
 import Fixture from '@/pages/Fixture'
@@ -8,7 +7,6 @@ import FixtureDetail from '@/pages/FixtureDetail'
 import Ranking from '@/pages/Ranking'
 import RankingUser from '@/pages/RankingUser'
 import MisPredicciones from '@/pages/MisPredicciones'
-import Admin from '@/pages/Admin'
 
 export const router = createBrowserRouter([
   {
@@ -25,12 +23,6 @@ export const router = createBrowserRouter([
       { path: '/ranking', element: <Ranking /> },
       { path: '/ranking/:usuario', element: <RankingUser /> },
       { path: '/mis-predicciones', element: <MisPredicciones /> },
-    ],
-  },
-  {
-    element: <AdminRoute />,
-    children: [
-      { path: '/admin', element: <Admin /> },
     ],
   },
 ])

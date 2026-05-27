@@ -1,25 +1,8 @@
-const KEY = 'prode_predicciones'
-
-export function getPredictions() {
-  try {
-    return JSON.parse(localStorage.getItem(KEY) ?? '{}')
-  } catch {
-    return {}
-  }
-}
-
-export function savePrediction(matchId, prediction) {
-  const all = getPredictions()
-  all[matchId] = prediction
-  localStorage.setItem(KEY, JSON.stringify(all))
-}
-
-// Mezcla predicciones guardadas sobre la lista de partidos.
-// Los valores del mock sirven como fallback; localStorage tiene prioridad.
-export function applyPredictions(partidos) {
-  const saved = getPredictions()
-  return partidos.map(p => ({
-    ...p,
-    mi_prediccion: saved[p.id] ?? p.mi_prediccion,
-  }))
+// +3 marcador exacto, +1 ganador/empate correcto, 0 si falla todo
+export function calcPuntos(prediction, goles_local, goles_visitante) {
+  if (!prediction || goles_local == null || goles_visitante == null) return null
+  const [pl, pv] = prediction.split('-').map(Number)
+  if (pl === goles_local && pv === goles_visitante) return 3
+  if (Math.sign(pl - pv) === Math.sign(goles_local - goles_visitante)) return 1
+  return 0
 }

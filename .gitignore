@@ -27,4 +27,15 @@ node_modules/
 dist/
 .env
 .env.*
+
+# Herramientas locales — no van al repo
 .claude/
+.gga
+agents.md
+
+# Assets de diseño grandes
+Brand/wireframe.pdf
+
+# Windows
+Thumbs.db
+Desktop.ini
