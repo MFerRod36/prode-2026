@@ -10,7 +10,6 @@ function pointsClass(pts) {
   return 'text-error'
 }
 
-// Flechas ▲/▼ para editar (solo cuando está habilitado)
 function StepBox({ value, onChange }) {
   return (
     <div className="flex flex-col items-center">
@@ -33,7 +32,6 @@ function StepBox({ value, onChange }) {
   )
 }
 
-// Caja bloqueada — siempre gris
 function PredBox({ value }) {
   return (
     <span className="flex h-7 min-w-7 items-center justify-center rounded-tl rounded-br bg-surface-high px-1 font-display text-sm font-bold leading-none text-text">
@@ -164,7 +162,6 @@ function HistorialMatchItem({ partido }) {
   )
 }
 
-// Card de una fecha — va dentro del carrusel de próximas
 export function ProximaDateCard({ fecha, partidos, onSave, onPrev, onNext }) {
   return (
     <div className="rounded-xl border border-border bg-surface px-4 pb-3 pt-4">
@@ -194,7 +191,6 @@ export function ProximaDateCard({ fecha, partidos, onSave, onPrev, onNext }) {
   )
 }
 
-// Historial — acordeón colapsable por fecha, sin banderas, compacto
 export function HistorialCard({ partidos }) {
   const dateGroups = groupByDate(partidos).reverse()
   const [openDates, setOpenDates] = useState(new Set())

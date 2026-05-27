@@ -11,11 +11,3 @@ export function groupByDate(partidos) {
   }
   return Object.keys(map).sort().map(fecha => ({ fecha, partidos: map[fecha] }))
 }
-
-export function isEditableDate(fechaIso) {
-  const today = new Date()
-  today.setHours(0, 0, 0, 0)
-  const match = new Date(`${fechaIso}T00:00:00`)
-  const diffDays = Math.floor((match - today) / (1000 * 60 * 60 * 24))
-  return diffDays >= 0 && diffDays <= 2
-}

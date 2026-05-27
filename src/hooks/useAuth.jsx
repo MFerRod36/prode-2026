@@ -8,7 +8,6 @@ export function AuthProvider({ children }) {
   const [perfil, setPerfil]   = useState(null)
   const [loading, setLoading] = useState(true)
 
-  // Efecto 1: maneja la sesión de auth
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
@@ -22,7 +21,6 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe()
   }, [])
 
-  // Efecto 2: busca el perfil cuando cambia el usuario
   useEffect(() => {
     if (!user) { setPerfil(null); return }
     supabase

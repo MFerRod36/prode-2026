@@ -1,50 +1,5 @@
 ## Funcionalidades MVP
 
-### Funcionalidades requeridas — PRODE 2026 MVP
-
-### Autenticación
-
-- Login con usuario y contraseña
-- Acceso restringido — solo las 5 usuarias registradas
-- Sin registro público ni recuperación de contraseña en MVP
-
-### Partidos
-
-- Calendario completo del Mundial 2026 con fecha, hora, equipos y grupo/fase
-- Estado del partido: próximo, en curso, finalizado
-- Cierre automático de predicciones 1 hora antes del inicio
-
-### Predicciones
-
-- Cargar predicción por partido: resultado, goleador y figura
-- Editar predicción hasta el cierre
-- Ver predicciones propias por partido
-- Ver predicciones de las demás usuarias una vez cerrado el partido
-
-### Puntos
-
-- Cálculo automático al cargar el resultado real
-- +1 por acertar ganador/empate
-- +3 por acertar marcador exacto
-- +1 por acertar goleador
-- +1 por acertar figura del partido
-
-### Ranking
-
-- Tabla general con puntos acumulados en tiempo real
-- Posición de cada usuaria
-
-### Panel de administración
-
-- Solo accesible por vos
-- Cargar resultado real de cada partido
-- Cargar goleador y figura del partido
-- Trigger automático de cálculo de puntos al guardar
-
-### Historial
-
-- Ver predicciones y puntos obtenidos por partido ya jugado
-
 ### Autenticación
 
 - Login con usuario y contraseña
@@ -54,14 +9,12 @@
 ### Partidos
 
 - Calendario completo del Mundial 2026 con fecha, hora, equipos, grupo/fase y estadio
-- Jugadores citados por equipo
-- 11 confirmado una vez disponible (vía API-Football)
 - Estado del partido: próximo, en curso, finalizado
 - Cierre automático de predicciones 1 hora antes del inicio
 
 ### Predicciones
 
-- Cargar predicción por partido: resultado, goleador y figura
+- Cargar predicción por partido: resultado (goles local — goles visitante)
 - Editar predicción hasta el cierre
 - Ver predicciones propias por partido
 - Ver predicciones de las demás usuarias una vez cerrado el partido
@@ -70,19 +23,23 @@
 
 - Cálculo automático al cargar el resultado real
 - +1 por acertar ganador/empate
-- +3 por acertar marcador exacto
-- +1 por acertar goleador
+- +3 por acertar marcador exacto (reemplaza el +1, no se suman)
+- Máximo 3 puntos por partido
 
 ### Ranking
 
 - Tabla general con puntos acumulados en tiempo real
 - Posición de cada usuaria
 
+### Panel de administración
+
+- Solo accesible por el admin
+- Cargar resultado real de cada partido
+- Trigger automático de cálculo de puntos al guardar
+
 ### Historial
 
 - Ver predicciones y puntos obtenidos por partido ya jugado
-
----
 
 ---
 
@@ -115,8 +72,6 @@
 ### /fixture/[id] — Partido próximo
 
 - Fecha, hora, estadio
-- Formación inicial en cancha (22 puntos)
-- Titulares + suplentes + DT por equipo
 - Formulario de predicción
   - Resultado del partido
   - Goleador
@@ -126,8 +81,6 @@
 
 - Marcador en vivo
 - Mi predicción cargada (bloqueada)
-- Formación inicial en cancha (22 puntos)
-- Titulares + suplentes + DT por equipo
 - Fecha, hora, estadio
 
 ### /fixture/[id] — Partido finalizado
@@ -135,8 +88,7 @@
 - Resultado final
 - Mi predicción
 - Puntos obtenidos en este partido
-- Formación inicial en cancha (22 puntos)
-- Titulares + suplentes + DT por equipo
+- Predicciones de las demás usuarias
 - Fecha, hora, estadio
 
 ## /ranking
@@ -147,12 +99,10 @@
 
 ### /ranking/[usuario]
 
-- Nombre de la usuaria
-- Puntos totales
+- Nombre de la usuaria + puntos totales
 - Lista de partidos finalizados
-  - Resultado real
-  - Predicción de esa usuaria
-  - Puntos obtenidos por partido
+  - Equipos · resultado real · predicción · puntos obtenidos
+- Volver al ranking
 
 ## /mis-predicciones
 
@@ -162,85 +112,6 @@
   - Cerrada sin predicción: indica 0 puntos
   - Finalizada: resultado + predicción + puntos
 - → toca para ir a /fixture/[id]
-
----
-
----
-
-## Flujo 1 — Cargar predicción
-
-INICIO
-↓
-[Pantalla] Login — ingresa usuario y contraseña
-↓
-¿Credenciales válidas?
-├── NO → [Pantalla] Login — muestra error "Usuario o contraseña incorrectos"
-└── SÍ ↓
-[Pantalla] Home
-↓
-¿Quiere cargar una predicción?
-├── NO → navega a otra sección
-└── SÍ ↓
-[Pantalla] Fixture o Home — toca un partido próximo
-↓
-[Pantalla] Fixture/[id] — ve info del partido
-↓
-¿Faltan más de 60 minutos para el inicio?
-├── NO → predicción bloqueada, no puede cargar → 0 puntos ese partido → FIN
-└── SÍ ↓
-¿Ya tiene predicción cargada?
-├── SÍ → puede editar
-└── NO → carga nueva predicción
-↓
-[Acción] Completa resultado + goleador
-↓
-[Acción] Confirma
-↓
-[Sistema] Guarda predicción
-↓
-[Pantalla] Confirmación visual — predicción guardada
-↓
-FIN
-
----
-
-## Flujo 2 — Ver resultado y puntos
-
-INICIO
-↓
-[Sistema] Partido finaliza — API-Football actualiza resultado
-↓
-[Sistema] Calcula puntos automáticamente para cada usuaria
-↓
-[Pantalla] Fixture/[id] — partido finalizado
-↓
-Ve resultado real + su predicción + puntos obtenidos en este partido
-↓
-¿Quiere ver cómo impactó en el ranking?
-├── NO → vuelve al Fixture → FIN
-└── SÍ ↓
-[Pantalla] Ranking — ve tabla general actualizada
-↓
-FIN
-
----
-
-## Flujo 3 — Consultar ranking y espiar predicciones
-
-INICIO
-↓
-[Pantalla] Ranking — ve tabla general con puntos de cada usuaria
-↓
-¿Quiere ver el detalle de una usuaria?
-├── NO → FIN
-└── SÍ ↓
-[Acción] Toca el nombre de una usuaria
-↓
-[Pantalla] Ranking/[usuario] — ve predicciones y puntos por partido finalizado
-↓
-FIN
-
----
 
 ---
 
@@ -285,10 +156,7 @@ FIN
 
 1. Equipos + fecha + hora + estadio
 2. Tiempo restante al cierre de predicción (cuenta regresiva)
-3. Formación en cancha (22 puntos sobre cancha dibujada)
-4. Titulares + suplentes + DT — equipo local
-5. Titulares + suplentes + DT — equipo visitante
-6. Formulario de predicción
+3. Formulario de predicción
    - Resultado (goles local — goles visitante)
    - Goleador del partido
    - Botón guardar predicción
@@ -298,20 +166,14 @@ FIN
 1. Equipos + marcador en vivo (destacado)
 2. Minuto del partido
 3. Mi predicción cargada (bloqueada, solo lectura)
-4. Formación en cancha (22 puntos sobre cancha dibujada)
-5. Titulares + suplentes + DT — equipo local
-6. Titulares + suplentes + DT — equipo visitante
-7. Fecha + hora + estadio
+4. Fecha + hora + estadio
 
 ## /fixture/[id] — Partido finalizado
 
 1. Equipos + resultado final (destacado)
-2. Mi predicción
-3. Puntos obtenidos en este partido
-4. Formación en cancha (22 puntos sobre cancha dibujada)
-5. Titulares + suplentes + DT — equipo local
-6. Titulares + suplentes + DT — equipo visitante
-7. Fecha + hora + estadio
+2. Mi predicción + puntos obtenidos en este partido
+3. Predicciones de las demás usuarias
+4. Fecha + hora + estadio
 
 ---
 
@@ -319,7 +181,7 @@ FIN
 
 1. Header — título + botón cerrar sesión
 2. Tabla general
-   - Posición · nombre · puntos totales · partidos jugados
+   - Posición · nombre · puntos totales
    - Fila propia destacada visualmente
 3. Navegación
 
@@ -335,15 +197,12 @@ FIN
 ## /mis-predicciones
 
 1. Header — título + botón cerrar sesión
-2. Filtro por estado: todas / pendientes / cargadas / finalizadas
-3. Lista de partidos
+2. Lista de partidos
    - Próximo con predicción pendiente: equipos · fecha · hora · botón cargar
    - Próximo con predicción cargada: equipos · fecha · hora · mi predicción · botón editar
    - Cerrado sin predicción: equipos · resultado · 0 puntos
    - Finalizado: equipos · resultado real · mi predicción · puntos obtenidos
-4. Navegación
-
----
+3. Navegación
 
 ---
 
@@ -382,48 +241,32 @@ FIN
 
 ---
 
-## Tabla: formaciones
-
-| Campo          | Tipo    | Descripción                                |
-| -------------- | ------- | ------------------------------------------ |
-| id             | uuid    | PK                                         |
-| partido_id     | uuid    | FK → [partidos.id](http://partidos.id/)    |
-| equipo         | varchar | local / visitante                          |
-| tipo           | varchar | titular / suplente / dt                    |
-| nombre_jugador | varchar | Nombre del jugador                         |
-| numero         | integer | Número de camiseta (nullable)              |
-| posicion       | varchar | Posición en la cancha (nullable)           |
-| pos_x          | float   | Posición X en el dibujo de la cancha (0-1) |
-| pos_y          | float   | Posición Y en el dibujo de la cancha (0-1) |
-
----
-
 ## Tabla: predicciones
 
-| Campo           | Tipo      | Descripción                             |
-| --------------- | --------- | --------------------------------------- |
-| id              | uuid      | PK                                      |
-| usuario_id      | uuid      | FK → [usuarios.id](http://usuarios.id/) |
-| partido_id      | uuid      | FK → [partidos.id](http://partidos.id/) |
-| goles_local     | integer   | Predicción goles local                  |
-| goles_visitante | integer   | Predicción goles visitante              |
-| goleador        | varchar   | Goleador predicho (nullable)            |
-| created_at      | timestamp | Fecha de creación                       |
-| updated_at      | timestamp | Última edición                          |
+| Campo           | Tipo      | Descripción                  |
+| --------------- | --------- | ---------------------------- |
+| id              | uuid      | PK                           |
+| usuario_id      | uuid      | FK → usuarios.id             |
+| partido_id      | uuid      | FK → partidos.id             |
+| goles_local     | integer   | Predicción goles local       |
+| goles_visitante | integer   | Predicción goles visitante   |
+| goleador        | varchar   | Goleador predicho (nullable) |
+| created_at      | timestamp | Fecha de creación            |
+| updated_at      | timestamp | Última edición               |
 
 ---
 
 ## Tabla: puntos
 
-| Campo            | Tipo      | Descripción                             |
-| ---------------- | --------- | --------------------------------------- |
-| id               | uuid      | PK                                      |
-| usuario_id       | uuid      | FK → [usuarios.id](http://usuarios.id/) |
-| partido_id       | uuid      | FK → [partidos.id](http://partidos.id/) |
-| puntos_resultado | integer   | 0 / 1 / 3                               |
-| puntos_goleador  | integer   | 0 / 1                                   |
-| puntos_total     | integer   | Suma total del partido                  |
-| calculado_at     | timestamp | Cuándo se calculó                       |
+| Campo            | Tipo      | Descripción            |
+| ---------------- | --------- | ---------------------- |
+| id               | uuid      | PK                     |
+| usuario_id       | uuid      | FK → usuarios.id       |
+| partido_id       | uuid      | FK → partidos.id       |
+| puntos_resultado | integer   | 0 / 1 / 3              |
+| puntos_goleador  | integer   | 0 / 1                  |
+| puntos_total     | integer   | Suma total del partido |
+| calculado_at     | timestamp | Cuándo se calculó      |
 
 ---
 
@@ -433,7 +276,6 @@ FIN
 - Un usuario tiene muchos registros de puntos
 - Un partido tiene muchas predicciones (una por usuaria)
 - Un partido tiene muchos registros de puntos (uno por usuaria)
-- Un partido tiene una formación por equipo
 
 ---
 
@@ -446,10 +288,6 @@ FIN
 - Máximo por partido → 4 puntos
 
 ---
-
----
-
-## Mapa de contenidos MVP
 
 # Mapa de contenido — PRODE 2026
 
@@ -469,8 +307,6 @@ Contenido fijo que no cambia durante el torneo.
 
 Contenido que se actualiza automáticamente desde la API.
 
-### Por partido
-
 - Fecha y hora de inicio
 - Estadio
 - Estado del partido (scheduled / in_play / finished)
@@ -479,13 +315,6 @@ Contenido que se actualiza automáticamente desde la API.
 - Minuto actual del partido
 - Goleador del partido
 
-### Por equipo en cada partido
-
-- Titulares (nombre + número + posición)
-- Suplentes (nombre + número)
-- Director técnico
-- Formación táctica (posiciones en cancha)
-
 ---
 
 ## Contenido generado por usuarias
@@ -493,7 +322,6 @@ Contenido que se actualiza automáticamente desde la API.
 Contenido que producen las 5 usuarias al jugar.
 
 - Predicción de resultado por partido
-- Predicción de goleador por partido
 
 ---
 
@@ -514,22 +342,21 @@ Contenido que genera la app automáticamente.
 | Contenido                    | Próximo | En curso | Finalizado |
 | ---------------------------- | ------- | -------- | ---------- |
 | Fecha + hora + estadio       | ✅      | ✅       | ✅         |
-| Formaciones en cancha        | ✅      | ✅       | ✅         |
-| Titulares + suplentes + DT   | ✅      | ✅       | ✅         |
 | Formulario de predicción     | ✅      | ❌       | ❌         |
 | Marcador en vivo             | ❌      | ✅       | ❌         |
 | Resultado final              | ❌      | ❌       | ✅         |
 | Mi predicción (solo lectura) | ❌      | ✅       | ✅         |
 | Puntos obtenidos             | ❌      | ❌       | ✅         |
+| Predicciones de otras        | ❌      | ❌       | ✅         |
 
 ---
 
 ## Contenido visible según rol
 
-| Contenido                   | Usuaria             | Admin (vos) |
-| --------------------------- | ------------------- | ----------- |
-| Ver todos los partidos      | ✅                  | ✅          |
-| Cargar predicción propia    | ✅                  | ✅          |
-| Ver predicciones de otras   | ✅ solo tras cierre | ✅          |
-| Ver ranking completo        | ✅                  | ✅          |
-| Modificar datos en Supabase | ❌                  | ✅ directo  |
+| Contenido                 | Usuaria             | Admin |
+| ------------------------- | ------------------- | ----- |
+| Ver todos los partidos    | ✅                  | ✅    |
+| Cargar predicción propia  | ✅                  | ✅    |
+| Ver predicciones de otras | ✅ solo tras cierre | ✅    |
+| Ver ranking completo      | ✅                  | ✅    |
+| Cargar resultados reales  | ❌                  | ✅    |

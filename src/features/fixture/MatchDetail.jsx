@@ -17,7 +17,6 @@ const STATUS_STYLE = {
   finalizado: 'bg-surface-high text-muted',
 }
 
-// ─── MatchHeader ─────────────────────────────────────────────────────────────
 function MatchHeader({ partido }) {
   const { local, flag_local, visitante, flag_visitante, hora, estadio, estado, goles_local, goles_visitante, minuto } = partido
 
@@ -77,8 +76,6 @@ function MatchHeader({ partido }) {
   )
 }
 
-// ─── EventosPanel — solo visible cuando el partido está finalizado ────────────
-// Muestra eventos de goles y tarjetas provenientes de la API.
 function EventosPanel({ partido }) {
   const { eventos_goles, tarjetas } = partido
   const hayEventos = eventos_goles.length > 0 || tarjetas.length > 0
@@ -132,7 +129,6 @@ function EventosPanel({ partido }) {
   )
 }
 
-// ─── LasDemas — predicciones de otras usuarias (solo en finalizado) ──────────
 function LasDemas({ partido }) {
   const { user } = useAuth()
   const [otras, setOtras] = useState([])
@@ -194,7 +190,6 @@ function LasDemas({ partido }) {
   )
 }
 
-// ─── Export principal ─────────────────────────────────────────────────────────
 export function MatchDetail({ partido }) {
   return (
     <div className="flex flex-col gap-4">

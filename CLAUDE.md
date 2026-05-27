@@ -93,8 +93,7 @@ Estas reglas deben respetarse siempre — son el corazón del producto:
 3. **Cálculo de puntos**:
    - +1 por acertar ganador o empate
    - +3 por marcador exacto (reemplaza el +1, no se suman)
-   - +1 por acertar goleador
-   - Máximo 4 puntos por partido
+   - Máximo 3 puntos por partido
    - Sin predicción = 0 puntos
 4. **5 usuarias fijas**: no hay registro público. Las cuentas se crean directamente en Supabase.
 5. **Admin único**: solo el dueño puede cargar resultados reales. El resto no tiene acceso al panel admin.
@@ -107,7 +106,7 @@ Estas reglas deben respetarse siempre — son el corazón del producto:
 | ------------ | --------------------------------------------------------- |
 | usuarios     | id, username, password_hash, created_at                   |
 | partidos     | equipos, fase, estado, goles, goleador, cierre_prediccion |
-| predicciones | usuario_id + partido_id + goles + goleador                |
+| predicciones | usuario_id + partido_id + goles_local + goles_visitante   |
 | puntos       | puntos_resultado + puntos_goleador + puntos_total         |
 
 ---
