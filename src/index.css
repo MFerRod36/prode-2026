@@ -8,30 +8,63 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: 'FWC2026Normal';
+  src: url('/fonts/fwc2026-normal.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
-  --font-sans:    'Noto Sans', sans-serif;
-  --font-display: 'FWC2026', 'Noto Sans', sans-serif;
+  --font-sans:         'Noto Sans', sans-serif;
+  --font-display:      'FWC2026', 'Noto Sans', sans-serif;
+  --font-display-norm: 'FWC2026Normal', 'Noto Sans', sans-serif;
 
   /* Fondos */
-  --color-bg:           oklch(9%  0.025 255);
-  --color-surface:      oklch(13% 0.025 255);
-  --color-surface-high: oklch(18% 0.022 255);
+  --color-bg:           #101010;
+  --color-surface:      #1a1a1a;
+  --color-surface-high: #262626;
 
   /* Bordes */
-  --color-border: oklch(25% 0.025 255);
+  --color-border: #333333;
 
   /* Texto */
-  --color-text:  oklch(93% 0.01 255);
-  --color-muted: oklch(52% 0.02 255);
+  --color-text:  #EBEBEB;
+  --color-muted: #888888;
 
   /* Marca — teal #55BDB6 */
   --color-primary:       #55BDB6;
   --color-primary-fg:    #03100f;
   --color-primary-hover: #44a9a2;
 
+  /* Puntos */
+  --color-gold:        #FFD346;
+  --color-points-card: #056859;
+  --color-points-tag:  #68FEDB;
+
+  /* Badge predicción — azul */
+  --color-badge:    #324DFD;
+  --color-badge-fg: #ffffff;
+
+  /* Posición — violeta */
+  --color-position:      #B089FE;
+  --color-position-card: #4B2C87;
+  --color-position-pill: #B1AAD3;
+
+  /* Nombre jugadora — ámbar */
+  --color-name: #FDAC40;
+
+  /* Números de marcador — azul */
+  --color-result: #218AF3;
+
+  /* Predicción correcta */
+  --color-success:    #02C755;
+  --color-success-bg: #02140A;
+
   /* Error */
-  --color-error:    oklch(65% 0.22 25);
-  --color-error-bg: oklch(12% 0.04 25);
+  --color-error:    #E05252;
+  --color-error-bg: #2A1010;
 }
 
 @layer base {
@@ -40,7 +73,9 @@
   }
 
   body {
-    background-color: var(--color-bg);
+    background: linear-gradient(180deg, #242424 0%, #080808 100%);
+    background-attachment: fixed;
+    min-height: 100dvh;
     color: var(--color-text);
   }
 }

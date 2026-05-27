@@ -35,7 +35,7 @@ const MOCK_HOY = [
 
 const MOCK_RECIENTES = [
   { id: 4, local: 'Alemania',   flag_local: '🇩🇪', visitante: 'Italia',        flag_visitante: '🇮🇹', goles_local: 2, goles_visitante: 1, mi_prediccion: '2-1', puntos: 3 },
-  { id: 5, local: 'Portugal',   flag_local: '🇵🇹', visitante: 'Uruguay',       flag_visitante: '🇺🇾', goles_local: 0, goles_visitante: 0, mi_prediccion: '1-0', puntos: 1 },
+  { id: 5, local: 'Portugal',   flag_local: '🇵🇹', visitante: 'Uruguay',       flag_visitante: '🇺🇾', goles_local: 0, goles_visitante: 0, mi_prediccion: '1-0', puntos: 0 },
   { id: 6, local: 'Inglaterra', flag_local: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', visitante: 'Países Bajos', flag_visitante: '🇳🇱', goles_local: 3, goles_visitante: 2, mi_prediccion: '2-1', puntos: 1 },
 ]
 
@@ -48,13 +48,13 @@ export default function Home() {
 
       <div>
         <p className="font-display text-lg uppercase tracking-widest text-muted">Hola,</p>
-        <p className="font-display text-4xl font-bold uppercase text-primary">{nombre}</p>
+        <p className="font-display text-4xl font-bold uppercase text-name">{nombre}</p>
       </div>
 
       <PointsCard puntos={MOCK_PUNTOS} posicion={MOCK_POSICION} />
 
       <section className="flex flex-col gap-3">
-        <h2 className="font-display text-base font-bold text-text">Partidos de hoy</h2>
+        <h2 className="font-display text-base font-bold uppercase tracking-wider text-text">Partidos de hoy</h2>
         <Carousel
           items={MOCK_HOY}
           renderItem={match => <MatchCard match={match} />}
@@ -62,7 +62,7 @@ export default function Home() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="font-display text-base font-bold text-text">Últimos resultados</h2>
+        <h2 className="font-display text-base font-bold uppercase tracking-wider text-text">Últimos resultados</h2>
         <RecentResults results={MOCK_RECIENTES} />
       </section>
 

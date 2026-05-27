@@ -1,13 +1,17 @@
 export function PointsCard({ puntos, posicion }) {
   return (
     <div className="grid grid-cols-2 gap-3">
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-surface py-5 shadow-[0_0_30px_-5px_rgba(85,189,182,0.2)]">
-        <span className="font-display text-5xl font-bold text-primary">{puntos}</span>
-        <span className="mt-1 text-xs text-muted">puntos</span>
+      <div className="flex flex-col items-center justify-center gap-2 rounded-tl-2xl rounded-br-2xl border border-border bg-points-card py-5">
+        <span className="font-display-norm text-7xl font-bold text-primary">{puntos}</span>
+        <span className="rounded-full bg-points-tag px-2 py-0.5 text-[10px] font-medium uppercase text-points-card">
+          Puntos
+        </span>
       </div>
-      <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-surface py-5 shadow-[0_0_30px_-5px_rgba(85,189,182,0.2)]">
-        <span className="font-display text-5xl font-bold text-text">#{posicion}</span>
-        <span className="mt-1 text-xs text-muted">posición</span>
+      <div className="flex flex-col items-center justify-center gap-2 rounded-tr-2xl rounded-bl-2xl border border-border bg-position-card py-5">
+        <span className="font-display-norm text-7xl font-bold text-position">#{posicion}</span>
+        <span className="rounded-full bg-position-pill px-2 py-0.5 text-[10px] font-medium uppercase text-position-card">
+          Posición
+        </span>
       </div>
     </div>
   )
