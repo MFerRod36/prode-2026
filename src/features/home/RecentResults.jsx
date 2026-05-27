@@ -10,7 +10,7 @@ export function RecentResults({ results }) {
             <p className="text-sm font-semibold text-text">
               {r.local} {r.goles_local} - {r.goles_visitante} {r.visitante}
             </p>
-            <p className="text-xs text-muted">Mi pick: {r.mi_prediccion}</p>
+            <p className="text-xs text-muted">Mi predicción: {r.mi_prediccion}</p>
           </div>
           <span className="font-display text-base font-bold text-primary">
             +{r.puntos}pts

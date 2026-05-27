@@ -1,11 +1,13 @@
 export function PointsCard({ puntos, posicion }) {
   return (
-    <div className="rounded-2xl border border-border bg-surface p-6 text-center shadow-[0_0_50px_-5px_rgba(85,189,182,0.2)]">
-      <p className="font-display text-6xl font-bold text-primary">{puntos}</p>
-      <p className="mt-1 text-sm text-muted">puntos totales</p>
-      <div className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-surface-high px-3 py-1">
-        <span className="text-xs text-muted">Posición</span>
-        <span className="text-sm font-bold text-text">#{posicion}</span>
+    <div className="grid grid-cols-2 gap-3">
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-surface py-5 shadow-[0_0_30px_-5px_rgba(85,189,182,0.2)]">
+        <span className="font-display text-5xl font-bold text-primary">{puntos}</span>
+        <span className="mt-1 text-xs text-muted">puntos</span>
+      </div>
+      <div className="flex flex-col items-center justify-center rounded-2xl border border-border bg-surface py-5 shadow-[0_0_30px_-5px_rgba(85,189,182,0.2)]">
+        <span className="font-display text-5xl font-bold text-text">#{posicion}</span>
+        <span className="mt-1 text-xs text-muted">posición</span>
       </div>
     </div>
   )

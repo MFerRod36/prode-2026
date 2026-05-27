@@ -3,10 +3,10 @@ import { Home, CalendarDays, Trophy, ClipboardList } from 'lucide-react'
 import { cn } from '@/lib/cn'
 
 const NAV_ITEMS = [
-  { to: '/home',             icon: Home,          label: 'Home'      },
-  { to: '/fixture',          icon: CalendarDays,  label: 'Fixture'   },
-  { to: '/ranking',          icon: Trophy,        label: 'Ranking'   },
-  { to: '/mis-predicciones', icon: ClipboardList, label: 'Mis picks' },
+  { to: '/home',             icon: Home,          label: 'Home'          },
+  { to: '/fixture',          icon: CalendarDays,  label: 'Fixture'       },
+  { to: '/ranking',          icon: Trophy,        label: 'Ranking'       },
+  { to: '/mis-predicciones', icon: ClipboardList, label: 'Predicciones'  },
 ]
 
 export function BottomNav() {
