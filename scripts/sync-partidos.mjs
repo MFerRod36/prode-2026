@@ -1,134 +1,160 @@
-// Sincroniza los partidos del Mundial 2026 desde football-data.org a Supabase.
+// Sincroniza estado y goles del Mundial 2026 desde worldcup26.ir a Supabase.
 // Modo normal: sincroniza una vez y sale.
 // Modo live:   cuando hay partidos en curso, sincroniza cada 60s hasta que finalicen.
 //
 // Uso local:   npm run sync
 // En CI:       node scripts/sync-partidos.mjs  (env vars vía GitHub Secrets)
+//
+// NO modifica IDs de Supabase — matchea por nombre de equipo para preservar predicciones.
+// API sin key: https://worldcup26.ir (datos en vivo, gratuita)
 
 import { createClient } from '@supabase/supabase-js'
 
 const SUPABASE_URL         = process.env.VITE_SUPABASE_URL
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY
-const FOOTBALL_API_TOKEN   = process.env.FOOTBALL_API_TOKEN
 
 if (!SUPABASE_URL)         console.error('Falta: VITE_SUPABASE_URL')
 if (!SUPABASE_SERVICE_KEY) console.error('Falta: SUPABASE_SERVICE_KEY')
-if (!FOOTBALL_API_TOKEN)   console.error('Falta: FOOTBALL_API_TOKEN')
-if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY || !FOOTBALL_API_TOKEN) process.exit(1)
+if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) process.exit(1)
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
-const FLAG = {
-  // CONMEBOL
-  ARG: 'ar', BRA: 'br', URU: 'uy', URY: 'uy', COL: 'co', ECU: 'ec',
-  VEN: 've', PAR: 'py', PER: 'pe', BOL: 'bo', CHI: 'cl',
-  // CONCACAF
-  USA: 'us', MEX: 'mx', CAN: 'ca', HON: 'hn', JAM: 'jm',
-  CRC: 'cr', PAN: 'pa', GUA: 'gt', TRI: 'tt', CUB: 'cu',
-  HAI: 'ht', CUW: 'cw', CUR: 'cw',
-  // UEFA
-  GER: 'de', FRA: 'fr', ESP: 'es', ENG: 'gb-eng', POR: 'pt',
-  NED: 'nl', BEL: 'be', ITA: 'it', AUT: 'at', CHE: 'ch', SUI: 'ch',
-  DEN: 'dk', SWE: 'se', NOR: 'no', FIN: 'fi', SCO: 'gb-sct',
-  WAL: 'gb-wls', IRL: 'ie', CZE: 'cz', POL: 'pl', HUN: 'hu',
-  ROU: 'ro', SVK: 'sk', SVN: 'si', SRB: 'rs', CRO: 'hr',
-  ALB: 'al', TUR: 'tr', GEO: 'ge', UKR: 'ua', GRE: 'gr',
-  ISL: 'is', MKD: 'mk', MNE: 'me', BIH: 'ba', ARM: 'am',
-  KAZ: 'kz', AZE: 'az',
-  // AFC
-  JPN: 'jp', KOR: 'kr', IRN: 'ir', SAU: 'sa', KSA: 'sa', AUS: 'au',
-  QAT: 'qa', IRQ: 'iq', JOR: 'jo', UZB: 'uz', OMA: 'om',
-  CHN: 'cn', THA: 'th', IDN: 'id', UAE: 'ae', BHR: 'bh',
-  // CAF
-  MAR: 'ma', SEN: 'sn', NGA: 'ng', GHA: 'gh', CMR: 'cm',
-  CIV: 'ci', EGY: 'eg', TUN: 'tn', ALG: 'dz', MLI: 'ml',
-  ZIM: 'zw', ANG: 'ao', BEN: 'bj', GIN: 'gn', MOZ: 'mz',
-  RSA: 'za', COD: 'cd', CPV: 'cv',
-  // OFC
-  NZL: 'nz', FIJ: 'fj',
-}
-
-const ESTADO_MAP = {
-  SCHEDULED: 'proximo', TIMED: 'proximo', POSTPONED: 'proximo', CANCELLED: 'proximo',
-  IN_PLAY: 'en_curso', PAUSED: 'en_curso', HALFTIME: 'en_curso',
-  FINISHED: 'finalizado',
-}
-
-const FASE_MAP = {
-  GROUP_STAGE:    'grupos',
-  LAST_32:        '32avos',
-  LAST_16:        '16avos',
-  QUARTER_FINALS: 'cuartos',
-  SEMI_FINALS:    'semis',
-  THIRD_PLACE:    'tercer_puesto',
-  FINAL:          'final',
-}
-
-const LIVE_STATUSES = new Set(['IN_PLAY', 'PAUSED', 'HALFTIME'])
-
 const TZ = 'America/Argentina/Buenos_Aires'
 
-// ─── 60s sleep ───────────────────────────────────────────────────────────────
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)) }
 
-// ─── Fetch desde football-data.org ───────────────────────────────────────────
-async function fetchMatches() {
-  const res = await fetch('https://api.football-data.org/v4/competitions/WC/matches', {
-    headers: { 'X-Auth-Token': FOOTBALL_API_TOKEN }
-  })
-  if (!res.ok) throw new Error(`API [${res.status}]: ${await res.text()}`)
-  return (await res.json()).matches
+const ALIASES = {
+  // USA
+  unitedstates:               'usa',
+  unitedstatesofamerica:      'usa',
+  // Korea
+  southkorea:                 'korea',
+  korearepublic:              'korea',
+  republicofkorea:            'korea',
+  skorea:                     'korea',
+  // DR Congo
+  democraticrepublicofthecongo: 'drcongo',
+  drcongo:                    'drcongo',
+  congodr:                    'drcongo',
+  congodrc:                   'drcongo',
+  rdcongo:                    'drcongo',
+  // Czech
+  czechrepublic:              'czech',
+  czechia:                    'czech',
+  // Turkey
+  turkey:                     'turkey',
+  turkiye:                    'turkey',
+  // Ivory Coast
+  cotedivoire:                'ivorycoast',
+  ivorycoast:                 'ivorycoast',
 }
 
-// ─── Mapeo y upsert a Supabase ────────────────────────────────────────────────
-function mapPartido(m) {
-  const utcDate = new Date(m.utcDate)
-  return {
-    id:              m.id,
-    local:           m.homeTeam.shortName ?? m.homeTeam.name ?? 'TBD',
-    visitante:       m.awayTeam.shortName ?? m.awayTeam.name ?? 'TBD',
-    flag_local:      FLAG[m.homeTeam.tla] ?? null,
-    flag_visitante:  FLAG[m.awayTeam.tla] ?? null,
-    fecha:           utcDate.toLocaleDateString('en-CA', { timeZone: TZ }),
-    hora:            utcDate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', timeZone: TZ }),
-    estadio:         m.venue ?? null,
-    estado:          ESTADO_MAP[m.status] ?? 'proximo',
-    goles_local:     m.score?.fullTime?.home ?? null,
-    goles_visitante: m.score?.fullTime?.away ?? null,
-    grupo:           m.group ? m.group.replace('GROUP_', 'Grupo ') : null,
-    fase:            FASE_MAP[m.stage] ?? 'grupos',
-    cierre_prediccion: new Date(utcDate.getTime() - 60 * 60 * 1000).toISOString(),
-    eventos:         [],
+function normalize(name) {
+  const n = (name ?? '')
+    .toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9]/g, '')
+  return ALIASES[n] ?? n
+}
+
+function similitud(a, b) {
+  const na = normalize(a)
+  const nb = normalize(b)
+  if (na === nb) return 1
+  if (na.includes(nb) || nb.includes(na)) return 0.9
+  if (na.slice(0, 4) === nb.slice(0, 4)) return 0.7
+  return 0
+}
+
+function estadoDesde(fixture) {
+  if (fixture.finished === 'TRUE') return 'finalizado'
+  if (fixture.time_elapsed === 'live') return 'en_curso'
+  return 'proximo'
+}
+
+function esEnVivo(fixture) {
+  return fixture.finished !== 'TRUE' && fixture.time_elapsed === 'live'
+}
+
+// ─── API worldcup26.ir ────────────────────────────────────────────────────────
+
+async function fetchFixtures() {
+  const res = await fetch('https://worldcup26.ir/get/games')
+  if (!res.ok) throw new Error(`worldcup26.ir [${res.status}]: ${await res.text()}`)
+  const json = await res.json()
+  return Array.isArray(json) ? json : (json.data ?? json.games ?? [])
+}
+
+// ─── Matching por nombre de equipo ────────────────────────────────────────────
+
+function encontrarPartido(fixture, partidos) {
+  const apiLocal     = fixture.home_team_name_en ?? ''
+  const apiVisitante = fixture.away_team_name_en ?? ''
+
+  let mejor = null
+  let mejorScore = -1
+
+  for (const p of partidos) {
+    const score = similitud(p.local, apiLocal) + similitud(p.visitante, apiVisitante)
+    if (score > mejorScore) { mejorScore = score; mejor = p }
   }
+
+  // Score mínimo 1.4 para considerar un match válido (ambos nombres tienen que ser razonablemente similares)
+  return mejorScore >= 1.4 ? mejor : null
 }
 
-async function syncToSupabase(matches) {
-  const sinBandera = new Set(
-    matches.flatMap(m => [m.homeTeam.tla, m.awayTeam.tla]).filter(tla => tla && !FLAG[tla])
-  )
-  if (sinBandera.size > 0) console.warn('⚠ TLA sin bandera:', [...sinBandera].join(', '))
+// ─── Sync ─────────────────────────────────────────────────────────────────────
 
-  const { error } = await supabase
-    .from('partidos')
-    .upsert(matches.map(mapPartido), { onConflict: 'id' })
+async function syncEstados(fixtures, partidos) {
+  const sinMatch = []
+  let actualizados = 0
 
-  if (error) throw new Error(`Supabase: ${error.message}`)
+  for (const f of fixtures) {
+    const partido = encontrarPartido(f, partidos)
+    if (!partido) {
+      sinMatch.push(`${f.home_team_name_en} vs ${f.away_team_name_en}`)
+      continue
+    }
+
+    const { error } = await supabase
+      .from('partidos')
+      .update({
+        estado:          estadoDesde(f),
+        goles_local:     f.home_score ?? null,
+        goles_visitante: f.away_score ?? null,
+      })
+      .eq('id', partido.id)
+
+    if (error) console.error(`Error actualizando ${partido.local} vs ${partido.visitante}:`, error.message)
+    else actualizados++
+  }
+
+  if (sinMatch.length > 0)
+    console.warn('⚠ Sin match en Supabase:', sinMatch.join(' | '))
+
+  return actualizados
 }
 
 // ─── Main ─────────────────────────────────────────────────────────────────────
+
 async function main() {
   const ts = () => new Date().toLocaleTimeString('es-AR', { timeZone: TZ })
 
-  let matches = await fetchMatches()
-  console.log(`[${ts()}] Sincronizando ${matches.length} partidos...`)
-  await syncToSupabase(matches)
-  console.log(`[${ts()}] ✓ ${matches.length} partidos sincronizados`)
+  const { data: partidos, error } = await supabase
+    .from('partidos')
+    .select('id, local, visitante, fecha, hora')
+  if (error) throw new Error(`Supabase: ${error.message}`)
+  console.log(`[${ts()}] ${partidos.length} partidos cargados de Supabase`)
 
-  const hayEnCurso = matches.some(m => LIVE_STATUSES.has(m.status))
+  let fixtures = await fetchFixtures()
+  console.log(`[${ts()}] ${fixtures.length} fixtures obtenidos de worldcup26.ir`)
+
+  const n = await syncEstados(fixtures, partidos)
+  console.log(`[${ts()}] ✓ ${n} partidos actualizados`)
+
+  const hayEnCurso = fixtures.some(esEnVivo)
   if (!hayEnCurso) return
 
-  // Modo live: loop de 60s hasta que no queden partidos activos
-  // Máximo 3 horas (cubre tiempo extra + penales)
   console.log(`[${ts()}] Partido en curso — modo live activo (sync cada 60s)`)
   const deadline = Date.now() + 180 * 60_000
 
@@ -136,16 +162,15 @@ async function main() {
     await sleep(60_000)
 
     try {
-      matches = await fetchMatches()
-      await syncToSupabase(matches)
-      console.log(`[${ts()}] ✓ sync live`)
+      fixtures = await fetchFixtures()
+      const n = await syncEstados(fixtures, partidos)
+      console.log(`[${ts()}] ✓ sync live — ${n} partidos actualizados`)
     } catch (err) {
       console.error(`[${ts()}] Error en loop:`, err.message)
       continue
     }
 
-    const stillLive = matches.some(m => LIVE_STATUSES.has(m.status))
-    if (!stillLive) {
+    if (!fixtures.some(esEnVivo)) {
       console.log(`[${ts()}] Partidos finalizados — saliendo del modo live`)
       break
     }
