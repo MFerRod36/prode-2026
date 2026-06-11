@@ -1,9 +1,6 @@
-import { useState, useEffect } from 'react'
 import { cn } from '@/lib/cn'
-import { supabase } from '@/lib/supabase'
-import { useAuth } from '@/hooks/useAuth'
-import { calcPuntos } from '@/lib/predictions'
 import { Flag } from '@/components/ui/Flag'
+import { usePrediccionesDemas } from '@/hooks/usePrediccionesDemas'
 
 const STATUS_LABEL = {
   proximo:    'Próximo',
@@ -77,7 +74,7 @@ function MatchHeader({ partido }) {
 }
 
 function EventosPanel({ partido }) {
-  const { eventos_goles, tarjetas } = partido
+  const { eventos_goles = [], tarjetas = [] } = partido
   const hayEventos = eventos_goles.length > 0 || tarjetas.length > 0
 
   if (!hayEventos) return null
@@ -130,38 +127,7 @@ function EventosPanel({ partido }) {
 }
 
 function LasDemas({ partido }) {
-  const { user } = useAuth()
-  const [otras, setOtras] = useState([])
-
-  useEffect(() => {
-    if (!user) return
-
-    async function load() {
-      const { data: preds } = await supabase
-        .from('predicciones')
-        .select('usuario_id, goles_local, goles_visitante')
-        .eq('partido_id', partido.id)
-        .neq('usuario_id', user.id)
-
-      if (!preds?.length) return
-
-      const { data: perfiles } = await supabase
-        .from('perfiles')
-        .select('id, username')
-        .in('id', preds.map(p => p.usuario_id))
-
-      setOtras(preds.map(pred => {
-        const prediccion = `${pred.goles_local}-${pred.goles_visitante}`
-        return {
-          usuario:    perfiles?.find(p => p.id === pred.usuario_id)?.username ?? 'Usuaria',
-          prediccion,
-          puntos:     calcPuntos(prediccion, partido.goles_local, partido.goles_visitante) ?? 0,
-        }
-      }))
-    }
-
-    load()
-  }, [user, partido.id])
+  const otras = usePrediccionesDemas(partido)
 
   if (otras.length === 0) return null
 
