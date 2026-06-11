@@ -68,19 +68,27 @@ function similitud(a, b) {
 
 function estadoDesde(fixture) {
   if (fixture.finished === 'TRUE') return 'finalizado'
-  if (fixture.time_elapsed === 'live') return 'en_curso'
+  const t = fixture.time_elapsed
+  if (t && t !== 'notstarted') return 'en_curso'
   return 'proximo'
 }
 
 function esEnVivo(fixture) {
-  return fixture.finished !== 'TRUE' && fixture.time_elapsed === 'live'
+  const t = fixture.time_elapsed
+  return fixture.finished !== 'TRUE' && t && t !== 'notstarted'
 }
 
 // ─── API worldcup26.ir ────────────────────────────────────────────────────────
 
-async function fetchFixtures() {
+async function fetchFixtures(attempt = 1) {
   const res = await fetch('https://worldcup26.ir/get/games')
-  if (!res.ok) throw new Error(`worldcup26.ir [${res.status}]: ${await res.text()}`)
+  if (!res.ok) {
+    if (attempt < 4) {
+      await sleep(attempt * 10_000)
+      return fetchFixtures(attempt + 1)
+    }
+    throw new Error(`worldcup26.ir [${res.status}] tras ${attempt} intentos`)
+  }
   const json = await res.json()
   return Array.isArray(json) ? json : (json.data ?? json.games ?? [])
 }
@@ -116,12 +124,14 @@ async function syncEstados(fixtures, partidos) {
       continue
     }
 
+    const parseScore = v => (v != null && v !== 'null' && v !== '') ? Number(v) : null
+
     const { error } = await supabase
       .from('partidos')
       .update({
         estado:          estadoDesde(f),
-        goles_local:     f.home_score ?? null,
-        goles_visitante: f.away_score ?? null,
+        goles_local:     parseScore(f.home_score),
+        goles_visitante: parseScore(f.away_score),
       })
       .eq('id', partido.id)
 
