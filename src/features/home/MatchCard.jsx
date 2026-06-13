@@ -29,7 +29,7 @@ function ScoreBox({ value, variant }) {
 function FlagWithBadge({ flag, goals }) {
   return (
     <div className="relative inline-block">
-      <Flag code={flag} className="h-10 w-auto rounded-sm" />
+      <Flag code={flag} className="h-10 w-16 rounded-sm" />
       {goals != null && (
         <span className="absolute -right-2 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full bg-name px-1 text-xs font-bold text-bg">
           {goals}
@@ -57,7 +57,7 @@ export function MatchCard({ match }) {
       <div className="flex items-center justify-between gap-2">
         <div className="flex flex-1 flex-col items-center gap-2">
           <FlagWithBadge flag={flag_local} goals={predLocal} />
-          <span className="font-display-norm text-sm uppercase tracking-widest text-text">{local}</span>
+          <span className="text-center font-display-norm text-sm uppercase tracking-widest text-text">{local}</span>
         </div>
 
         <div className="flex flex-col items-center">
@@ -76,7 +76,7 @@ export function MatchCard({ match }) {
 
         <div className="flex flex-1 flex-col items-center gap-2">
           <FlagWithBadge flag={flag_visitante} goals={predVisitante} />
-          <span className="font-display-norm text-sm uppercase tracking-widest text-text">{visitante}</span>
+          <span className="text-center font-display-norm text-sm uppercase tracking-widest text-text">{visitante}</span>
         </div>
       </div>
 

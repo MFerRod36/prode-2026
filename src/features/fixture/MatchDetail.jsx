@@ -22,8 +22,8 @@ function MatchHeader({ partido }) {
       <div className="flex items-center gap-4 px-6 pt-6 pb-4">
 
         <div className="flex flex-1 flex-col items-center gap-2">
-          <Flag code={flag_local} className="h-12 w-auto rounded" />
-          <span className="font-display-norm text-xs uppercase tracking-widest text-text">{local}</span>
+          <Flag code={flag_local} className="h-12 w-20 rounded" />
+          <span className="text-center font-display-norm text-xs uppercase tracking-widest text-text">{local}</span>
         </div>
 
         <div className="flex flex-col items-center gap-1">
@@ -48,8 +48,8 @@ function MatchHeader({ partido }) {
         </div>
 
         <div className="flex flex-1 flex-col items-center gap-2">
-          <Flag code={flag_visitante} className="h-12 w-auto rounded" />
-          <span className="font-display-norm text-xs uppercase tracking-widest text-text">{visitante}</span>
+          <Flag code={flag_visitante} className="h-12 w-20 rounded" />
+          <span className="text-center font-display-norm text-xs uppercase tracking-widest text-text">{visitante}</span>
         </div>
 
       </div>

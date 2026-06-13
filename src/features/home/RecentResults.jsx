@@ -11,7 +11,7 @@ function pointsClass(puntos) {
 function TeamRow({ flag, name, goals }) {
   return (
     <div className="flex h-8 items-center gap-2">
-      <Flag code={flag} className="h-4 w-auto shrink-0 rounded-sm" />
+      <Flag code={flag} className="h-4 w-6 shrink-0 rounded-sm" />
       <span className="flex-1 truncate font-display-norm text-sm uppercase tracking-widest text-text">{name}</span>
       <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-tl rounded-br bg-white font-display text-base font-bold text-black">
         {goals}

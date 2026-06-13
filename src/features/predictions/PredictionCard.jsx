@@ -64,7 +64,7 @@ function ProximaRow({ partido, canEdit, onSave }) {
       <div className="flex items-center gap-2">
 
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
-          <Flag code={partido.flag_local} className="h-3.5 w-auto shrink-0 rounded-sm" />
+          <Flag code={partido.flag_local} className="h-3.5 w-5 shrink-0 rounded-sm" />
           <span className="truncate font-display-norm text-[11px] uppercase tracking-wider text-text">
             {partido.local}
           </span>
@@ -94,7 +94,7 @@ function ProximaRow({ partido, canEdit, onSave }) {
           <span className="truncate text-right font-display-norm text-[11px] uppercase tracking-wider text-text">
             {partido.visitante}
           </span>
-          <Flag code={partido.flag_visitante} className="h-3.5 w-auto shrink-0 rounded-sm" />
+          <Flag code={partido.flag_visitante} className="h-3.5 w-5 shrink-0 rounded-sm" />
         </div>
 
       </div>

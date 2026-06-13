@@ -29,7 +29,7 @@ function MatchRow({ partido }) {
       <div className="flex items-center gap-2">
 
         <div className="flex min-w-0 flex-1 items-center gap-1.5">
-          <Flag code={flag_local} className="h-3.5 w-auto shrink-0 rounded-sm" />
+          <Flag code={flag_local} className="h-3.5 w-5 shrink-0 rounded-sm" />
           <span className="truncate font-display-norm text-[11px] uppercase tracking-wider text-text">
             {local}
           </span>
@@ -51,7 +51,7 @@ function MatchRow({ partido }) {
           <span className="truncate text-right font-display-norm text-[11px] uppercase tracking-wider text-text">
             {visitante}
           </span>
-          <Flag code={flag_visitante} className="h-3.5 w-auto shrink-0 rounded-sm" />
+          <Flag code={flag_visitante} className="h-3.5 w-5 shrink-0 rounded-sm" />
         </div>
 
       </div>

@@ -8,11 +8,11 @@ function MatchRow({ item }) {
   return (
     <div className="flex items-center gap-3 py-3">
       <div className="flex flex-1 items-center gap-2">
-        <Flag code={flag_local} className="h-4 w-auto rounded-sm" />
+        <Flag code={flag_local} className="h-4 w-6 rounded-sm" />
         <span className="font-display text-sm font-bold text-gold">
           {goles_local}-{goles_visitante}
         </span>
-        <Flag code={flag_visitante} className="h-4 w-auto rounded-sm" />
+        <Flag code={flag_visitante} className="h-4 w-6 rounded-sm" />
       </div>
       <span className="font-display-norm text-sm text-muted">
         {prediccion ?? '—'}
