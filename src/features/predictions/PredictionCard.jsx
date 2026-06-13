@@ -3,12 +3,7 @@ import { ChevronLeft, ChevronRight, ChevronUp, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { formatFecha, groupByDate } from '@/utils/date'
 import { Flag } from '@/components/ui/Flag'
-
-function pointsClass(pts) {
-  if (pts >= 3) return 'text-success'
-  if (pts >= 1) return 'text-gold'
-  return 'text-error'
-}
+import { pointsClass } from '@/utils/points'
 
 function StepBox({ value, onChange }) {
   return (

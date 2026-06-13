@@ -1,12 +1,7 @@
 import { Link } from 'react-router-dom'
 import { cn } from '@/lib/cn'
 import { Flag } from '@/components/ui/Flag'
-
-function pointsClass(puntos) {
-  if (puntos >= 3) return 'text-success'
-  if (puntos >= 1) return 'text-gold'
-  return 'text-error'
-}
+import { pointsClass } from '@/utils/points'
 
 function TeamRow({ flag, name, goals }) {
   return (

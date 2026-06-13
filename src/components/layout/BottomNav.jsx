@@ -17,20 +17,14 @@ export function BottomNav() {
           <li key={to} className="flex flex-1">
             <NavLink to={to} className="flex flex-1 items-center justify-center px-2 py-2">
               {({ isActive }) => (
-                <span
-                  className="relative flex w-full flex-col items-center gap-1 py-2.5 text-xs font-medium uppercase"
-                  style={{
-                    color: isActive ? '#ffffff' : 'var(--color-muted)',
-                    transition: 'color 300ms ease-in-out',
-                  }}
-                >
-                  <span
-                    className="absolute inset-0 rounded-tl-2xl rounded-br-2xl bg-points-card"
-                    style={{
-                      opacity: isActive ? 1 : 0,
-                      transition: 'opacity 300ms ease-in-out',
-                    }}
-                  />
+                <span className={cn(
+                  'relative flex w-full flex-col items-center gap-1 py-2.5 text-xs font-medium uppercase transition-colors duration-300',
+                  isActive ? 'text-white' : 'text-muted'
+                )}>
+                  <span className={cn(
+                    'absolute inset-0 rounded-tl-2xl rounded-br-2xl bg-points-card transition-opacity duration-300',
+                    isActive ? 'opacity-100' : 'opacity-0'
+                  )} />
                   <Icon size={20} className="relative" />
                   <span className="relative">{label}</span>
                 </span>

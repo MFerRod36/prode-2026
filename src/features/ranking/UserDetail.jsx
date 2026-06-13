@@ -1,5 +1,6 @@
 import { cn } from '@/lib/cn'
 import { Flag } from '@/components/ui/Flag'
+import { pointsClass } from '@/utils/points'
 
 function MatchRow({ item }) {
   const { partido, prediccion, puntos } = item
@@ -17,10 +18,7 @@ function MatchRow({ item }) {
       <span className="font-display-norm text-sm text-muted">
         {prediccion ?? '—'}
       </span>
-      <span className={cn(
-        'w-8 text-right font-display text-base font-bold',
-        puntos >= 3 ? 'text-success' : puntos >= 1 ? 'text-gold' : 'text-error'
-      )}>
+      <span className={cn('w-8 text-right font-display text-base font-bold', pointsClass(puntos))}>
         {puntos > 0 ? `+${puntos}` : '0'}
       </span>
     </div>
