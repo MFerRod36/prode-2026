@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
+import { translatePartido } from '@/utils/countries'
 
 export function useFixture() {
   const { user } = useAuth()
@@ -22,7 +23,7 @@ export function useFixture() {
       for (const p of (data ?? [])) {
         const letra = p.grupo?.replace('Grupo ', '') ?? '?'
         if (!map[letra]) map[letra] = []
-        map[letra].push(p)
+        map[letra].push(translatePartido(p))
       }
 
       setGrupos(

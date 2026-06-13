@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { calcPuntos } from '@/lib/predictions'
+import { translatePartido } from '@/utils/countries'
 
 export function useUserStats(usuarioId) {
   const [predicciones, setPredicciones] = useState([])
@@ -29,7 +30,7 @@ export function useUserStats(usuarioId) {
         const pred = (preds ?? []).find(p => p.partido_id === partido.id)
         const predStr = pred ? `${pred.goles_local}-${pred.goles_visitante}` : null
         return {
-          partido,
+          partido: translatePartido(partido),
           prediccion: predStr,
           puntos: calcPuntos(predStr, partido.goles_local, partido.goles_visitante) ?? 0,
         }

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import { useAuth } from '@/hooks/useAuth'
 import { calcPuntos } from '@/lib/predictions'
+import { translatePartido } from '@/utils/countries'
 
 export function usePartido(id) {
   const { user } = useAuth()
@@ -25,7 +26,7 @@ export function usePartido(id) {
 
       const mi_prediccion = pred ? `${pred.goles_local}-${pred.goles_visitante}` : null
       setPartido({
-        ...p,
+        ...translatePartido(p),
         mi_prediccion,
         puntos: p.estado === 'finalizado'
           ? calcPuntos(mi_prediccion, p.goles_local, p.goles_visitante)
