@@ -8,12 +8,16 @@ export function useLogin() {
 
   async function login({ email, password }) {
     setAuthError(null)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      setAuthError('Email o contraseña incorrectos')
-      return
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        setAuthError('Email o contraseña incorrectos')
+        return
+      }
+      navigate('/home')
+    } catch {
+      setAuthError('Error de conexión. Intentá de nuevo.')
     }
-    navigate('/home')
   }
 
   return { login, authError }
