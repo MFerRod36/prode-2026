@@ -38,7 +38,7 @@ export function LoginForm() {
       />
 
       {authError && (
-        <p className="rounded-lg border border-error/20 bg-error-bg px-4 py-3 text-sm text-error">
+        <p role="alert" className="rounded-lg bg-error-bg px-4 py-3 text-sm font-medium text-error">
           {authError}
         </p>
       )}
