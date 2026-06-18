@@ -116,13 +116,17 @@ Deno.serve(async () => {
       })
 
       const esFinalizado = nuevoEstado === 'finalizado'
+      const esEnCurso    = nuevoEstado === 'en_curso'
       const tieneGoles   = nuevoEstado !== 'proximo'
+      // En curso: defaultear a 0 si la API no manda score (0-0 es válido)
+      const golesLocal     = tieneGoles ? (parseScore(f.home_score) ?? (esEnCurso ? 0 : null)) : null
+      const golesVisitante = tieneGoles ? (parseScore(f.away_score) ?? (esEnCurso ? 0 : null)) : null
       let query = supabase
         .from('partidos')
         .update({
           estado:          nuevoEstado,
-          goles_local:     tieneGoles ? parseScore(f.home_score) : null,
-          goles_visitante: tieneGoles ? parseScore(f.away_score) : null,
+          goles_local:     golesLocal,
+          goles_visitante: golesVisitante,
         })
         .eq('id', partido.id)
 
