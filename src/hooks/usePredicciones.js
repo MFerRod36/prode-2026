@@ -37,6 +37,13 @@ export function usePredicciones() {
     }
 
     load()
+
+    const channel = supabase
+      .channel('partidos-predicciones')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'partidos' }, load)
+      .subscribe()
+
+    return () => supabase.removeChannel(channel)
   }, [user])
 
   async function guardar(partidoId, prediccion) {
