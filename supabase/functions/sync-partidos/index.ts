@@ -93,14 +93,20 @@ Deno.serve(async () => {
         sinMatch.push(`${f.home_team_name_en} vs ${f.away_team_name_en}`)
         continue
       }
-      const { error } = await supabase
+      const nuevoEstado = estadoDesde(f)
+      let query = supabase
         .from('partidos')
         .update({
-          estado:          estadoDesde(f),
+          estado:          nuevoEstado,
           goles_local:     parseScore(f.home_score),
           goles_visitante: parseScore(f.away_score),
         })
         .eq('id', partido.id)
+
+      // Never downgrade a finalizado match — API data can lag behind reality
+      if (nuevoEstado !== 'finalizado') query = query.neq('estado', 'finalizado')
+
+      const { error } = await query
 
       if (!error) actualizados++
     }
