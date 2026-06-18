@@ -94,17 +94,18 @@ Deno.serve(async () => {
         continue
       }
       const nuevoEstado = estadoDesde(f)
+      const esFinalizado = nuevoEstado === 'finalizado'
       let query = supabase
         .from('partidos')
         .update({
           estado:          nuevoEstado,
-          goles_local:     parseScore(f.home_score),
-          goles_visitante: parseScore(f.away_score),
+          goles_local:     esFinalizado ? parseScore(f.home_score) : null,
+          goles_visitante: esFinalizado ? parseScore(f.away_score) : null,
         })
         .eq('id', partido.id)
 
       // Never downgrade a finalizado match — API data can lag behind reality
-      if (nuevoEstado !== 'finalizado') query = query.neq('estado', 'finalizado')
+      if (!esFinalizado) query = query.neq('estado', 'finalizado')
 
       const { error } = await query
 
