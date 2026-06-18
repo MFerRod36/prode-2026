@@ -52,7 +52,7 @@ function estadoDesde(f: Record<string, string>): string {
 }
 
 // deno-lint-ignore no-explicit-any
-type Partido = { id: string; local: string; visitante: string }
+type Partido = { id: string; local: string; visitante: string; cierre_prediccion: string | null; estado: string }
 
 function encontrarPartido(f: Record<string, string>, partidos: Partido[]): Partido | null {
   const apiLocal     = f.home_team_name_en ?? ''
@@ -73,7 +73,7 @@ function parseScore(v: string | null | undefined): number | null {
 Deno.serve(async () => {
   try {
     const [{ data: partidos, error: errP }, fixturesRes] = await Promise.all([
-      supabase.from('partidos').select('id, local, visitante'),
+      supabase.from('partidos').select('id, local, visitante, estado, cierre_prediccion'),
       fetch('https://worldcup26.ir/get/games'),
     ])
 
@@ -86,6 +86,8 @@ Deno.serve(async () => {
 
     let actualizados = 0
     const sinMatch: string[] = []
+    const debugMatched: object[] = []
+    const ahora = Date.now()
 
     for (const f of fixtures) {
       const partido = encontrarPartido(f, partidos ?? [])
@@ -93,14 +95,34 @@ Deno.serve(async () => {
         sinMatch.push(`${f.home_team_name_en} vs ${f.away_team_name_en}`)
         continue
       }
-      const nuevoEstado = estadoDesde(f)
+
+      let nuevoEstado = estadoDesde(f)
+
+      // Fallback temporal: si la API dice proximo pero cierre_prediccion + 60min ya pasó, forzar en_curso
+      if (nuevoEstado === 'proximo' && partido.cierre_prediccion) {
+        const inicioMs = new Date(partido.cierre_prediccion).getTime() + 60 * 60 * 1000
+        if (ahora > inicioMs + 10 * 60 * 1000) nuevoEstado = 'en_curso'
+      }
+
+      debugMatched.push({
+        partido: `${partido.local} vs ${partido.visitante}`,
+        estadoDB: partido.estado,
+        estadoAPI: estadoDesde(f),
+        estadoFinal: nuevoEstado,
+        finished: f.finished,
+        time_elapsed: f.time_elapsed,
+        home_score: f.home_score,
+        away_score: f.away_score,
+      })
+
       const esFinalizado = nuevoEstado === 'finalizado'
+      const tieneGoles   = nuevoEstado !== 'proximo'
       let query = supabase
         .from('partidos')
         .update({
           estado:          nuevoEstado,
-          goles_local:     esFinalizado ? parseScore(f.home_score) : null,
-          goles_visitante: esFinalizado ? parseScore(f.away_score) : null,
+          goles_local:     tieneGoles ? parseScore(f.home_score) : null,
+          goles_visitante: tieneGoles ? parseScore(f.away_score) : null,
         })
         .eq('id', partido.id)
 
@@ -112,7 +134,7 @@ Deno.serve(async () => {
       if (!error) actualizados++
     }
 
-    return Response.json({ ok: true, actualizados, sinMatch })
+    return Response.json({ ok: true, actualizados, sinMatch, debug: debugMatched })
   } catch (err) {
     return Response.json({ ok: false, error: (err as Error).message }, { status: 500 })
   }
