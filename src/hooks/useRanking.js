@@ -48,6 +48,13 @@ export function useRanking() {
     }
 
     load()
+
+    const channel = supabase
+      .channel('partidos-ranking')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'partidos' }, load)
+      .subscribe()
+
+    return () => supabase.removeChannel(channel)
   }, [user])
 
   return { ranking, loading }

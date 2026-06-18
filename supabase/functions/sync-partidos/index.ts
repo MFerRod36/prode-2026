@@ -44,10 +44,11 @@ function similitud(a: string, b: string): number {
 }
 
 function estadoDesde(f: Record<string, string>): string {
-  if (f.finished === 'TRUE') return 'finalizado'
-  const t = f.time_elapsed
-  if (t && t !== 'notstarted') return 'en_curso'
-  return 'proximo'
+  if (String(f.finished ?? '').toUpperCase() === 'TRUE') return 'finalizado'
+  const t = (f.time_elapsed ?? '').toUpperCase()
+  if (!t || t === 'NOTSTARTED') return 'proximo'
+  if (t === 'FT' || t === 'AET' || t === 'PEN') return 'finalizado'
+  return 'en_curso'
 }
 
 // deno-lint-ignore no-explicit-any
