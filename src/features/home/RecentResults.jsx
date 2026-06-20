@@ -29,10 +29,10 @@ export function RecentResults({ results }) {
           <TeamRow flag={r.flag_visitante} name={r.visitante} goals={r.goles_visitante} />
           <div className="-mx-4 -mb-3 mt-2 flex items-center justify-between rounded-b-xl bg-surface-high px-4 py-2.5">
             <p className="text-xs uppercase tracking-wider text-muted">
-              Mi predicción: {r.mi_prediccion}
+              Mi predicción: {r.mi_prediccion ?? '—'}
             </p>
             <span className={cn('font-display text-base font-bold', pointsClass(r.puntos))}>
-              {r.puntos !== 0 ? `+${r.puntos}` : '0'}
+              {r.puntos == null ? '—' : r.puntos !== 0 ? `+${r.puntos}` : '0'}
             </span>
           </div>
         </Link>
