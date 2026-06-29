@@ -4,9 +4,9 @@ import { usePartido } from '@/hooks/usePartido'
 import { MatchDetail } from '@/features/fixture/MatchDetail'
 
 export default function FixtureDetail() {
-  const { id }              = useParams()
-  const navigate            = useNavigate()
-  const { partido, loading } = usePartido(Number(id))
+  const { id }                        = useParams()
+  const navigate                      = useNavigate()
+  const { partido, loading, guardar } = usePartido(Number(id))
 
   if (loading) return null
 
@@ -28,7 +28,7 @@ export default function FixtureDetail() {
         <ChevronLeft size={16} />
         Volver
       </button>
-      <MatchDetail partido={partido} />
+      <MatchDetail partido={partido} onGuardar={guardar} />
     </div>
   )
 }

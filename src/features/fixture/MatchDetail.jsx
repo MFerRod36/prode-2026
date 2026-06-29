@@ -1,5 +1,8 @@
+import { useState } from 'react'
+import { ChevronUp, ChevronDown } from 'lucide-react'
 import { cn } from '@/lib/cn'
 import { Flag } from '@/components/ui/Flag'
+import { pointsClass } from '@/utils/points'
 import { usePrediccionesDemas } from '@/hooks/usePrediccionesDemas'
 
 const STATUS_LABEL = {
@@ -73,6 +76,109 @@ function MatchHeader({ partido }) {
   )
 }
 
+// ── Panel de predicción ───────────────────────────────────────────────────────
+
+function StepBox({ value, onChange }) {
+  return (
+    <div className="flex flex-col items-center">
+      <button
+        className="flex h-5 w-7 items-center justify-center text-muted active:text-primary"
+        onClick={() => onChange(value + 1)}
+      >
+        <ChevronUp size={12} />
+      </button>
+      <span className="flex h-7 min-w-7 items-center justify-center rounded-tl rounded-br bg-primary/20 font-display text-sm font-bold text-primary">
+        {value}
+      </span>
+      <button
+        className="flex h-5 w-7 items-center justify-center text-muted active:text-primary"
+        onClick={() => onChange(Math.max(0, value - 1))}
+      >
+        <ChevronDown size={12} />
+      </button>
+    </div>
+  )
+}
+
+function MiPrediccionPanel({ partido, onGuardar }) {
+  const { estado, mi_prediccion, puntos, cierre_prediccion } = partido
+
+  const canEdit = (estado === 'proximo' || estado === 'en_curso')
+    && new Date() < new Date(cierre_prediccion)
+
+  const initGl = mi_prediccion != null ? +mi_prediccion.split('-')[0] : 0
+  const initGv = mi_prediccion != null ? +mi_prediccion.split('-')[1] : 0
+
+  const [gl, setGl] = useState(initGl)
+  const [gv, setGv] = useState(initGv)
+  const [saved, setSaved] = useState(mi_prediccion)
+  const [editing, setEditing] = useState(canEdit && mi_prediccion == null)
+
+  function handleSave() {
+    const pred = `${gl}-${gv}`
+    setSaved(pred)
+    onGuardar(pred)
+    setEditing(false)
+  }
+
+  // Si el partido finalizó, mostrar resultado de mi predicción
+  if (estado === 'finalizado') {
+    if (!saved) return null
+    return (
+      <div className="rounded-xl border border-border bg-surface px-4 py-4">
+        <p className="mb-3 font-display-norm text-[10px] uppercase tracking-widest text-muted">Mi predicción</p>
+        <div className="flex items-center justify-between">
+          <span className="font-display text-xl font-bold text-text">{saved}</span>
+          {puntos != null && (
+            <span className={cn('font-display text-xl font-bold', pointsClass(puntos))}>
+              {puntos > 0 ? `+${puntos}` : '0'}
+            </span>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  // Partido próximo o en curso
+  return (
+    <div className="rounded-xl border border-border bg-surface px-4 py-4">
+      <div className="mb-3 flex items-center justify-between">
+        <p className="font-display-norm text-[10px] uppercase tracking-widest text-muted">Mi predicción</p>
+        {canEdit && !editing && saved && (
+          <button
+            onClick={() => setEditing(true)}
+            className="font-sans text-[10px] uppercase tracking-wider text-error"
+          >
+            Editar
+          </button>
+        )}
+      </div>
+
+      {canEdit && editing ? (
+        <div className="flex items-center justify-center gap-4">
+          <StepBox value={gl} onChange={setGl} />
+          <span className="font-display-norm text-xl text-muted">-</span>
+          <StepBox value={gv} onChange={setGv} />
+          <button
+            onClick={handleSave}
+            className="ml-2 rounded-full bg-primary px-4 py-1.5 font-sans text-[10px] font-medium uppercase tracking-wider text-white"
+          >
+            Guardar
+          </button>
+        </div>
+      ) : saved ? (
+        <p className="font-display text-xl font-bold text-text">{saved}</p>
+      ) : (
+        <p className="font-sans text-xs text-muted">
+          {canEdit ? 'Ingresá tu predicción' : 'No hiciste una predicción'}
+        </p>
+      )}
+    </div>
+  )
+}
+
+// ── Eventos del partido ───────────────────────────────────────────────────────
+
 function EventosPanel({ partido }) {
   const { eventos_goles = [], tarjetas = [] } = partido
   const hayEventos = eventos_goles.length > 0 || tarjetas.length > 0
@@ -126,6 +232,8 @@ function EventosPanel({ partido }) {
   )
 }
 
+// ── Predicciones de las demás ─────────────────────────────────────────────────
+
 function LasDemas({ partido }) {
   const otras = usePrediccionesDemas(partido)
 
@@ -156,10 +264,13 @@ function LasDemas({ partido }) {
   )
 }
 
-export function MatchDetail({ partido }) {
+// ── Componente principal ──────────────────────────────────────────────────────
+
+export function MatchDetail({ partido, onGuardar }) {
   return (
     <div className="flex flex-col gap-4">
       <MatchHeader partido={partido} />
+      <MiPrediccionPanel partido={partido} onGuardar={onGuardar} />
       {partido.estado === 'finalizado' && <EventosPanel partido={partido} />}
       {partido.estado === 'finalizado' && <LasDemas    partido={partido} />}
     </div>

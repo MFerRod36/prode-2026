@@ -38,5 +38,18 @@ export function usePartido(id) {
     load()
   }, [user, id])
 
-  return { partido, loading }
+  async function guardar(prediccion) {
+    if (!user || !id) return
+    const [gl, gv] = prediccion.split('-').map(Number)
+    const { error } = await supabase
+      .from('predicciones')
+      .upsert(
+        { usuario_id: user.id, partido_id: id, goles_local: gl, goles_visitante: gv },
+        { onConflict: 'usuario_id,partido_id' }
+      )
+    if (error) { console.error(error); return }
+    setPartido(prev => ({ ...prev, mi_prediccion: prediccion }))
+  }
+
+  return { partido, loading, guardar }
 }
