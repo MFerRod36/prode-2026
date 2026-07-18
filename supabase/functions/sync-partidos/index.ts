@@ -26,7 +26,7 @@ const ALIASES: Record<string, string> = {
 }
 
 const ROUND_TO_FASE: Record<string, string> = {
-  R32: '16avos', R16: '8avos', QF: 'cuartos', SF: 'semis', F: 'final',
+  R32: '16avos', R16: '8avos', QF: 'cuartos', SF: 'semis', FINAL: 'final', '3RD': 'tercer_puesto',
 }
 
 // Flags que no matchean por nombre exacto entre la DB de grupos y la API de llaves

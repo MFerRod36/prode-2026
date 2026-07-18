@@ -25,7 +25,7 @@ const ALIASES = {
 }
 
 const ROUND_TO_FASE = {
-  R32: '16avos', R16: '8avos', QF: 'cuartos', SF: 'semis', F: 'final',
+  R32: '16avos', R16: '8avos', QF: 'cuartos', SF: 'semis', FINAL: 'final', '3RD': 'tercer_puesto',
 }
 
 // Flags que no matchean por nombre exacto entre grupos y llaves
@@ -88,7 +88,7 @@ async function main() {
   for (const f of all) {
     const fase = ROUND_TO_FASE[f.group]
     if (!fase) continue
-    if (f.type === 'group') continue  // excluir Grupo F (misma letra que Final)
+    if (f.type === 'group') continue
     if (!f.home_team_name_en && !f.away_team_name_en) continue
     if (!apiByFase[fase]) apiByFase[fase] = []
     apiByFase[fase].push(f)
